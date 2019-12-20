@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "231344525202",
+    "firebase_url": "https://solemne3siquesi.firebaseio.com",
+    "project_id": "solemne3siquesi",
+    "storage_bucket": "solemne3siquesi.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:231344525202:android:8850ff99f73b2d99a2fb4b",
+        "android_client_info": {
+          "package_name": "com.example.solemnefinalestasiquesi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "231344525202-qt68jnmo043o16sji9c2561ujcoapjbt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyARVlnRC-8vC-E7xf9FUORSW7HhT-k9AVM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "231344525202-qt68jnmo043o16sji9c2561ujcoapjbt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
