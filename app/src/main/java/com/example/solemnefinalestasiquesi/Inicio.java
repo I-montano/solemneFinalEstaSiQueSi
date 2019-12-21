@@ -21,7 +21,6 @@ public class Inicio extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inicio);
 
-
         btnLogOut=findViewById(R.id.logOut);
         btnLogOut.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -31,6 +30,10 @@ public class Inicio extends AppCompatActivity {
                 startActivity(intToRegistrar);
             }
         });
+
+        // TODO: caja de texto multiText
+        // TODO: agregar editText
+        // TODO: botón enviar
     }
 
 
