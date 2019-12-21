@@ -28,12 +28,12 @@ public class LoginActivity extends AppCompatActivity {
         btnRegisterFromLogin = findViewById(R.id.btnRegisterFromLogin);
         progressBarLoading.setVisibility(ProgressBar.INVISIBLE);
 
-        btnLogin.setOnClickListener(v -> LoginActivity.this.handleLogin(
+        btnLogin.setOnClickListener(v -> handleLogin(
                 editTextEmail.getText().toString(),
                 editTextPassword.getText().toString()
         ));
 
-        btnRegisterFromLogin.setOnClickListener(v -> LoginActivity.this.redirectToRegisterActivity());
+        btnRegisterFromLogin.setOnClickListener(v -> redirectToRegisterActivity());
     }
 
     private void handleLogin(String email, String password){
