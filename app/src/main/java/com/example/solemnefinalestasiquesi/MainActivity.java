@@ -86,12 +86,12 @@ public class MainActivity extends AppCompatActivity {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         String name = user.getEmail();
         String messageToSend = editTextMessage.getText().toString();
-        mFirebaseDatabaseReference.child("mensaje_user").push().setValue(name+": "+messageToSend);
+        mFirebaseDatabaseReference.child("message_user").push().setValue(name+": "+messageToSend);
         editTextMessage.setText("");
     }
 
     private void handleHistoricMessages() {
-        mFirebaseDatabaseReference.child("mensaje_user").addValueEventListener(new ValueEventListener() {
+        mFirebaseDatabaseReference.child("message_user").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.getValue() == null){
@@ -124,26 +124,27 @@ public class MainActivity extends AppCompatActivity {
         List<Text> historyOfMessages = chatApi.getAllMessages();
 
         if(!historyOfMessages.isEmpty()){
-            if(multiLineTextMessages.getText().length() == 0){
-                for(int i = 0; i < historyOfMessages.size(); i++){
+            fillMultiLineTextMessages(historyOfMessages);
+        } else {
+            chatApi.createNewMessage(messages.get(messages.size()-1));
+
+            if (multiLineTextMessages.getText().length() == 0){
+                for(int i = 0; i < historyOfMessages.size(); i++) {
                     multiLineTextMessages.append(historyOfMessages.get(i)+"\n");
                 }
             } else {
                 multiLineTextMessages.append(historyOfMessages.get(historyOfMessages.size()-1)+"\n");
             }
         }
-        else{
-            chatApi.createNewMessage(messages.get(messages.size()-1));
+    }
 
-            if(multiLineTextMessages.getText().length() == 0){
-                for(int i = 0; i < historyOfMessages.size(); i++) {
-                    multiLineTextMessages.append(historyOfMessages.get(i)+"\n");
-                }
+    private void fillMultiLineTextMessages(List<Text> historyOfMessages) {
+        if(multiLineTextMessages.getText().length() == 0){
+            for(int i = 0; i < historyOfMessages.size(); i++){
+                multiLineTextMessages.append(historyOfMessages.get(i)+"\n");
             }
-
-            else{
-                multiLineTextMessages.append(historyOfMessages.get(historyOfMessages.size()-1)+"\n");
-            }
+        } else {
+            multiLineTextMessages.append(historyOfMessages.get(historyOfMessages.size()-1)+"\n");
         }
     }
 
