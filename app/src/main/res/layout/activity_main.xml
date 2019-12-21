@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background"
     tools:context=".MainActivity">
 
     <TextView
@@ -11,16 +12,19 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textColor="@android:color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Bienvenido/a: " />
+        tools:text="Bienvenid@: " />
 
     <Button
         android:id="@+id/btnOut"
-        android:layout_width="53dp"
+        android:layout_width="70dp"
         android:layout_height="45dp"
-        android:text="X"
+        android:background="#E57373"
+        android:text="Salir"
+        android:textColor="@android:color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewWelcome" />
 
@@ -29,7 +33,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:accessibilityHeading="false"
-        android:background="#add8e6"
+        android:background="#42ADD8E6"
         android:clickable="false"
         android:editable="false"
         android:ems="10"
