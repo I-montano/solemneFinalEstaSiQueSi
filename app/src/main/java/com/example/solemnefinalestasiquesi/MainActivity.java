@@ -5,77 +5,154 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
+import com.example.solemnefinalestasiquesi.API.ChatApi;
+import com.example.solemnefinalestasiquesi.Models.Text;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-
-    EditText etEmail, etPassword;
-    Button btnRegistrar;
-    TextView tvIngresa;
-    FirebaseAuth mFirebaseAuth;
-
+    private Button btnSend,btnOut;
+    private EditText editTextMessage;
+    private EditText multiLineTextMessages;
+    private TextView textViewWelcome;
+    private DatabaseReference mFirebaseDatabaseReference;
+    private boolean doubleBackToExitPressedOnce;
+    private Handler mHandler;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mFirebaseAuth=FirebaseAuth.getInstance();
-        etEmail=findViewById(R.id.editEmail);
-        etPassword=findViewById(R.id.editPassword);
-        btnRegistrar=findViewById(R.id.btnRegistrar1);
-        btnRegistrar.setOnClickListener(new View.OnClickListener() {
+        // Instance View stuffs
+        mHandler = new Handler();
+        doubleBackToExitPressedOnce = false;
+        editTextMessage = findViewById(R.id.editTextMessage);
+        multiLineTextMessages = findViewById(R.id.multiLineTextMessages);
+        textViewWelcome = findViewById(R.id.textViewWelcome);
+        btnSend = findViewById(R.id.btnSend);
+        btnOut = findViewById(R.id.btnOut);
+        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference("solemneFinalEstaSiQUeSi");
+
+        FirebaseUser logged_user = FirebaseAuth.getInstance().getCurrentUser();
+
+        if(logged_user != null) {
+            handleLoggedUser(logged_user);
+        } else {
+            redirectToLoginActivity();
+        }
+    }
+
+    private void handleLoggedUser(FirebaseUser logged_user) {
+        textViewWelcome.append(" "+logged_user.getEmail());
+        btnOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String email = etEmail.getText().toString();
-                String pass = etPassword.getText().toString();
-                if (email.isEmpty()) {
-                    etEmail.setError("Ingrese un correo por favor");
-                    etEmail.requestFocus();
-                }
-                else if (pass.isEmpty()){
-                    etPassword.setError("Ingrese su contraseña por favor");
-                    etPassword.requestFocus();
-                }
-                else if (email.isEmpty() && pass.isEmpty()){
-                    Toast.makeText(MainActivity.this,"Ambos campos están vacios" ,Toast.LENGTH_SHORT).show();
-                }
-                else if (!(email.isEmpty() && pass.isEmpty())){
-                    mFirebaseAuth.createUserWithEmailAndPassword(email,pass).addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (!task.isSuccessful()){
-                                Toast.makeText(MainActivity.this, "No se completó el registro", Toast.LENGTH_SHORT).show();
-                            }
-                            else{
-                                startActivity(new Intent(MainActivity.this,Inicio.class));
-                            }
-                        }
-
-                    });
-                }
-                else{
-                    Toast.makeText(MainActivity.this, "¡Ocurrió un error inesperado!", Toast.LENGTH_SHORT).show();
-                }
+                MainActivity.this.handleLogoutEvent();
             }
         });
-        tvIngresa=findViewById(R.id.tvIngresar1);
-        tvIngresa.setOnClickListener(new View.OnClickListener() {
+        btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                Intent i = new Intent(MainActivity.this,Ingresar.class);
-                startActivity(i);
+            public void onClick(View v) {
+                MainActivity.this.handleSendMessage();
+            }
+        });
+        handleHistoricMessages();
+    }
+
+    private void redirectToLoginActivity() {
+
+    }
+
+    private void handleLogoutEvent(){
+        FirebaseAuth.getInstance().signOut();
+        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private void handleSendMessage() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String name = user.getEmail();
+        String messageToSend = editTextMessage.getText().toString();
+        mFirebaseDatabaseReference.child("mensaje_user").push().setValue(name+": "+messageToSend);
+        editTextMessage.setText("");
+    }
+
+    private void handleHistoricMessages() {
+        mFirebaseDatabaseReference.child("mensaje_user").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.getValue() == null){
+                    Toast.makeText(MainActivity.this,"Conversación vacía.",Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    fillMessagesHistory(dataSnapshot);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(MainActivity.this,"error db: "+databaseError.getMessage(),Toast.LENGTH_SHORT).show();
             }
         });
     }
 
+    private void fillMessagesHistory(DataSnapshot dataSnapshot) {
+        Iterable<DataSnapshot> messagesHistory = dataSnapshot.getChildren();
+        ArrayList<String> messages = new ArrayList<>();
+
+        for(DataSnapshot message : messagesHistory){
+            String m = message.getValue().toString();
+            messages.add(m);
+        }
+
+        ChatApi chatApi = new ChatApi();
+
+        chatApi.deleteAllMessages();
+        chatApi.recreateAllMessages(messages);
+        List<Text> historyOfMessages = chatApi.getAllMessages();
+
+        if(!historyOfMessages.isEmpty()){
+            if(multiLineTextMessages.getText().length() == 0){
+                for(int i = 0; i < historyOfMessages.size(); i++){
+                    multiLineTextMessages.append(historyOfMessages.get(i)+"\n");
+                }
+            } else {
+                multiLineTextMessages.append(historyOfMessages.get(historyOfMessages.size()-1)+"\n");
+            }
+        }
+        else{
+            chatApi.createNewMessage(messages.get(messages.size()-1));
+
+            if(multiLineTextMessages.getText().length() == 0){
+                for(int i = 0; i < historyOfMessages.size(); i++) {
+                    multiLineTextMessages.append(historyOfMessages.get(i)+"\n");
+                }
+            }
+
+            else{
+                multiLineTextMessages.append(historyOfMessages.get(historyOfMessages.size()-1)+"\n");
+            }
+        }
+    }
 }
