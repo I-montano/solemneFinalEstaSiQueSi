@@ -32,20 +32,25 @@ public class MainActivity extends AppCompatActivity {
     private TextView textViewWelcome;
     private DatabaseReference mFirebaseDatabaseReference;
 
+    private boolean doubleBackToExitPressedOnce;
+    private Handler handler;
+
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        doubleBackToExitPressedOnce = false;
+        handler = new Handler();
 
-        editTextMessage = findViewById(R.id.editTextMessage);
-        multiLineTextMessages = findViewById(R.id.multiLineTextMessages);
         textViewWelcome = findViewById(R.id.textViewWelcome);
-        btnSend = findViewById(R.id.btnSend);
         btnOut = findViewById(R.id.btnOut);
+        multiLineTextMessages = findViewById(R.id.multiLineTextMessages);
+        editTextMessage = findViewById(R.id.editTextMessage);
+        btnSend = findViewById(R.id.btnSend);
+
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference("solemneFinalEstaSiQUeSi");
 
         FirebaseUser logged_user = FirebaseAuth.getInstance().getCurrentUser();
-
         if(logged_user != null) {
             handleLoggedUser(logged_user);
         } else {
@@ -55,13 +60,19 @@ public class MainActivity extends AppCompatActivity {
 
     private void handleLoggedUser(FirebaseUser logged_user) {
         textViewWelcome.append(" "+logged_user.getEmail());
-        btnOut.setOnClickListener(v -> MainActivity.this.handleLogoutEvent());
-        btnSend.setOnClickListener(v -> MainActivity.this.handleSendMessage());
+        btnOut.setOnClickListener(v -> handleLogoutEvent());
+        btnSend.setOnClickListener(v -> handleSendMessage());
         handleHistoricMessages();
     }
 
     private void redirectToLoginActivity() {
-
+        // Handler scopedHandler = new Handler();
+        handler.postDelayed(() -> {
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            finish();
+        }, 1500);
     }
 
     private void handleLogoutEvent(){
@@ -134,5 +145,25 @@ public class MainActivity extends AppCompatActivity {
                 multiLineTextMessages.append(historyOfMessages.get(historyOfMessages.size()-1)+"\n");
             }
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (handler != null) {
+            handler.removeCallbacks(runnable);
+        }
+    }
+
+    private final Runnable runnable = () -> doubleBackToExitPressedOnce = false;
+
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed();
+            return;
+        }
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "Doble click para salir", Toast.LENGTH_SHORT).show();
+        handler.postDelayed(runnable, 2000);
     }
 }
