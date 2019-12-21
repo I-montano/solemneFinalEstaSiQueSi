@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(MainActivity.this,"error db: "+databaseError.getMessage(),Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this,"Error en la base de datos: "+databaseError.getMessage(),Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -127,7 +127,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         ChatApi chatApi = new ChatApi();
-
         chatApi.deleteAllMessages();
         chatApi.recreateAllMessages(messages);
         List<Text> historyOfMessages = chatApi.getAllMessages();

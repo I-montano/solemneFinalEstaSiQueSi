@@ -19,5 +19,5 @@ public interface TextDao {
     long insert(String text);
 
     @Query("DELETE FROM text")
-    public void nudeTable();
+    void nudeTable();
 }
