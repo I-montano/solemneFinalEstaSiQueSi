@@ -8,11 +8,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
@@ -22,7 +19,7 @@ public class RegisterActivity extends AppCompatActivity {
     private Button btnRegister;
     private EditText editTextEmailRegister;
     private EditText editTextPasswordRegister;
-    private FirebaseAuth mAuth;
+    private FirebaseAuth firebaseAuth;
     private ProgressBar progressBarLoadingRegister;
 
     @Override
@@ -42,14 +39,14 @@ public class RegisterActivity extends AppCompatActivity {
         ));
 
         FirebaseApp.initializeApp(this);
-        mAuth = FirebaseAuth.getInstance();
+        firebaseAuth = FirebaseAuth.getInstance();
     }
 
-    private void handleRegister(String email, String pass) {
-        if (pass.length() >= 6){
+    private void handleRegister(String email, String password) {
+        if (password.length() >= 6){
             progressBarLoadingRegister.setVisibility(ProgressBar.VISIBLE);
 
-            mAuth.createUserWithEmailAndPassword(email, pass)
+            firebaseAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, task -> {
                         if (task.isSuccessful()) {
                             handleSuccessfulTask();
@@ -57,21 +54,26 @@ public class RegisterActivity extends AppCompatActivity {
                             displayExceptionMessage(task);
                         }
                     });
+        } else {
+            Toast.makeText(
+                    RegisterActivity.this,
+                    "Error: La password debe contenter al menos seis catactéres",
+                Toast.LENGTH_SHORT
+            ).show();
         }
-        else{Toast.makeText(RegisterActivity.this, "Error: La password debe contenter al menos seis catactéres",
-                Toast.LENGTH_SHORT).show();}
     }
 
     private void handleSuccessfulTask() {
         FirebaseAuth.getInstance().signOut();
         Toast.makeText(RegisterActivity.this, "Registro exitoso", Toast.LENGTH_SHORT).show();
 
-        Handler hd = new Handler();
-        hd.postDelayed(() -> {
+        Handler handler = new Handler();
+        handler.postDelayed(() -> {
             Intent intent = new Intent(
                     RegisterActivity.this,
                     LoginActivity.class
             );
+
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
             finish();

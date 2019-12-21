@@ -18,10 +18,14 @@ public class ChatApi {
 
     public void recreateAllMessages(ArrayList<String> messages) {
         AppDatabase db = ChatApp.getDatabase();
+
         for(int i = 0; i < messages.size(); i++){
             TextDao textDao = db.textDao();
+            Text text = new Text();
+
             String message = messages.get(i);
-            textDao.insert(message);
+            text.setMessage(message);
+            textDao.insert(text);
         }
     }
 
@@ -33,7 +37,10 @@ public class ChatApi {
 
     public void createNewMessage(String message) {
         AppDatabase db = ChatApp.getDatabase();
+        Text text = new Text();
+        text.setMessage(message);
+
         TextDao textDao = db.textDao();
-        textDao.insert(message);
+        textDao.insert(text);
     }
 }

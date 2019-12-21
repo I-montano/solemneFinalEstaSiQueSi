@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -15,9 +14,6 @@ import android.widget.Toast;
 
 import com.example.solemnefinalestasiquesi.API.ChatApi;
 import com.example.solemnefinalestasiquesi.Models.Text;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -35,17 +31,12 @@ public class MainActivity extends AppCompatActivity {
     private EditText multiLineTextMessages;
     private TextView textViewWelcome;
     private DatabaseReference mFirebaseDatabaseReference;
-    private boolean doubleBackToExitPressedOnce;
-    private Handler mHandler;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Instance View stuffs
-        mHandler = new Handler();
-        doubleBackToExitPressedOnce = false;
         editTextMessage = findViewById(R.id.editTextMessage);
         multiLineTextMessages = findViewById(R.id.multiLineTextMessages);
         textViewWelcome = findViewById(R.id.textViewWelcome);
@@ -64,18 +55,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void handleLoggedUser(FirebaseUser logged_user) {
         textViewWelcome.append(" "+logged_user.getEmail());
-        btnOut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MainActivity.this.handleLogoutEvent();
-            }
-        });
-        btnSend.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MainActivity.this.handleSendMessage();
-            }
-        });
+        btnOut.setOnClickListener(v -> MainActivity.this.handleLogoutEvent());
+        btnSend.setOnClickListener(v -> MainActivity.this.handleSendMessage());
         handleHistoricMessages();
     }
 

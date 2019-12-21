@@ -11,7 +11,6 @@ public class ChatApp extends Application {
 
     public void onCreate() {
         super.onCreate();
-
         ChatApp.context = getApplicationContext();
         ChatApp.database = initDatabase();
     }
@@ -25,8 +24,8 @@ public class ChatApp extends Application {
     }
 
     private AppDatabase initDatabase() {
-        AppDatabase database = Room.databaseBuilder(getAppContext(), AppDatabase.class, "shoppingcart.db")
-                .allowMainThreadQueries()   //Allows room to do operation on main thread
+        AppDatabase database = Room.databaseBuilder(getAppContext(), AppDatabase.class, "chatapp.db")
+                .allowMainThreadQueries()
                 .fallbackToDestructiveMigration()
                 .build();
         return database;

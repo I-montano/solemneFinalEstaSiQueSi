@@ -9,15 +9,15 @@ import java.util.List;
 
 @Dao
 public interface TextDao {
-    @Query("SELECT * FROM text")
+    @Query("SELECT * FROM texts")
     List<Text> getAll();
 
-    @Query("SELECT * FROM text where id = (:id)")
+    @Query("SELECT * FROM texts where id = (:id)")
     Text getById(int id);
 
     @Insert
-    long insert(String text);
+    long insert(Text text);
 
-    @Query("DELETE FROM text")
+    @Query("DELETE FROM texts")
     void nudeTable();
 }

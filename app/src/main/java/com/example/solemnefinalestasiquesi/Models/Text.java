@@ -3,8 +3,9 @@ package com.example.solemnefinalestasiquesi.Models;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "text")
+@Entity(tableName = "texts")
 public class Text {
+
     @PrimaryKey(autoGenerate = true)
     public int id;
 

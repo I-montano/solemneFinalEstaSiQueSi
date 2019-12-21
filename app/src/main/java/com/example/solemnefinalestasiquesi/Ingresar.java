@@ -39,64 +39,54 @@ public class Ingresar extends AppCompatActivity {
         tvRegistrar=findViewById(R.id.tvRegistrar1);
 
 
-        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
-
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser mFireBaseUser = mFirebaseAuth.getCurrentUser();
-                if(mFireBaseUser != null) {
-                    Toast.makeText(Ingresar.this,"Ya estás logeado",Toast.LENGTH_SHORT);
-                    Intent i = new Intent(Ingresar.this,Inicio.class);
-                    startActivity(i);
-                }
-                else{
-                    Toast.makeText(Ingresar.this,"Por favor ingresa",Toast.LENGTH_SHORT);
-                }
+        mAuthStateListener = firebaseAuth -> {
+            FirebaseUser mFireBaseUser = mFirebaseAuth.getCurrentUser();
+            if(mFireBaseUser != null) {
+                Toast.makeText(Ingresar.this,"Ya estás logeado",Toast.LENGTH_SHORT);
+                Intent i = new Intent(Ingresar.this,Inicio.class);
+                startActivity(i);
+            }
+            else{
+                Toast.makeText(Ingresar.this,"Por favor ingresa",Toast.LENGTH_SHORT);
             }
         };
 
-        btnIngresar.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    String email = etEmail.getText().toString();
-                    String pass = etPassword.getText().toString();
-                    if (email.isEmpty()) {
-                        etEmail.setError("Ingrese un correo por favor");
-                        etEmail.requestFocus();
-                    }
-                    else if (pass.isEmpty()){
-                        etPassword.setError("Ingrese su contraseña por favor");
-                        etPassword.requestFocus();
-                    }
-                    else if (email.isEmpty() && pass.isEmpty()){
-                        Toast.makeText(Ingresar.this,"Ambos campos están vacios" ,Toast.LENGTH_SHORT).show();
-                    }
-                    else if (!(email.isEmpty() && pass.isEmpty())){
-                        mFirebaseAuth.signInWithEmailAndPassword(email,pass).addOnCompleteListener(Ingresar.this, new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if(!task.isSuccessful()){
-                                    Toast.makeText(Ingresar.this, "Error al ingresar, por favor intentelo de nuevo", Toast.LENGTH_SHORT).show();
-                                }
-                                else{
-                                    Intent intToHome = new Intent (Ingresar.this,Inicio.class);
-                                    startActivity(intToHome);
-                                }
-                            }
-                        });
-                    }
-                    else{
-                        Toast.makeText(Ingresar.this, "¡Ocurrió un error inesperado!", Toast.LENGTH_SHORT).show();
-                    }
+        btnIngresar.setOnClickListener(v -> {
+            String email = etEmail.getText().toString();
+            String pass = etPassword.getText().toString();
+            if (email.isEmpty()) {
+                etEmail.setError("Ingrese un correo por favor");
+                etEmail.requestFocus();
             }
-        });
+            else if (pass.isEmpty()){
+                etPassword.setError("Ingrese su contraseña por favor");
+                etPassword.requestFocus();
+            }
+            else if (email.isEmpty() && pass.isEmpty()){
+                Toast.makeText(Ingresar.this,"Ambos campos están vacios" ,Toast.LENGTH_SHORT).show();
+            }
+            else if (!(email.isEmpty() && pass.isEmpty())){
+                mFirebaseAuth.signInWithEmailAndPassword(email,pass).addOnCompleteListener(Ingresar.this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if(!task.isSuccessful()){
+                            Toast.makeText(Ingresar.this, "Error al ingresar, por favor intentelo de nuevo", Toast.LENGTH_SHORT).show();
+                        }
+                        else{
+                            Intent intToHome = new Intent (Ingresar.this,Inicio.class);
+                            startActivity(intToHome);
+                        }
+                    }
+                });
+            }
+            else{
+                Toast.makeText(Ingresar.this, "¡Ocurrió un error inesperado!", Toast.LENGTH_SHORT).show();
+            }
+    });
 
-        tvRegistrar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intRegistrar=new Intent (Ingresar.this,MainActivity.class);
-                startActivity(intRegistrar);
-            }
+        tvRegistrar.setOnClickListener(view -> {
+            Intent intRegistrar=new Intent (Ingresar.this,MainActivity.class);
+            startActivity(intRegistrar);
         });
     }
 

@@ -4,8 +4,7 @@ import androidx.room.Database;
 import androidx.room.RoomDatabase;
 
 import com.example.solemnefinalestasiquesi.DAO.TextDao;
-
-import org.w3c.dom.Text;
+import com.example.solemnefinalestasiquesi.Models.Text;
 
 @Database(entities = {Text.class}, version = 1)
 public abstract class AppDatabase extends RoomDatabase {
